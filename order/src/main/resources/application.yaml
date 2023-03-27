@@ -1,0 +1,25 @@
+# APPLICATION
+server:
+  port: 8080
+
+# DATABASE
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/deliver
+    schema: orders
+    username: postgres
+    password: postgres
+  # MIGRATION
+  liquibase:
+    default-schema: ${spring.datasource.schema}
+  # JPA
+  jpa:
+    open-in-view: false
+
+# KAFKA TOPICS
+topic:
+  order:
+    order-topic: com.deliver.order-service.v1.order
+
+# SWAGGER
+springdoc.swagger-ui.path: /swagger-ui
