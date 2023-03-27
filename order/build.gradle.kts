@@ -20,26 +20,40 @@ repositories {
 }
 
 dependencies {
+    // CONTRACT
+    implementation(project(":contract"))
+
+    // SPRING
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.kafka:spring-kafka")
-
-    implementation("jakarta.validation:jakarta.validation-api:${project.properties["versions.jakarta"]}")
-
-    implementation("org.mapstruct:mapstruct:${project.properties["versions.mapstruct"]}")
-    annotationProcessor("org.mapstruct:mapstruct-processor:${project.properties["versions.mapstruct"]}")
-
     implementation("org.liquibase:liquibase-core")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
+    implementation("jakarta.validation:jakarta.validation-api:${project.properties["versions.jakarta"]}")
     runtimeOnly("org.postgresql:postgresql")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    // SWAGGER
+//    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
+//    implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
+//    implementation("org.springdoc:springdoc-openapi-core:1.1.49")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4")
+//    developmentOnly("org.springdoc:springdoc-openapi-security:1.6.15")
 
+    // LOMBOK
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+
+    // MAPSTRUCT
+    implementation("org.mapstruct:mapstruct:${project.properties["versions.mapstruct"]}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${project.properties["versions.mapstruct"]}")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+
+    // DEV TOOLS
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // TESTING
     testImplementation("org.springframework.boot:spring-boot-starter-test")

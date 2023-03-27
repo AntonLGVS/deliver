@@ -33,7 +33,7 @@ class OrderControllerTest extends Specification {
         def userAuth = user(username).roles(roles)
 
         and:
-        orderService.getOrder(_ as UUID) >> new OrderDTO(createdBy: "user")
+        orderService.getOrder(_ as UUID) >> Optional.of(new OrderDTO(createdBy: "user"))
 
         when:
         def res = mvc.perform(get(url).with(userAuth)).andReturn().response

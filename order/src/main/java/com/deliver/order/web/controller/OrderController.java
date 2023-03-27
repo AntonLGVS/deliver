@@ -8,6 +8,7 @@ import com.deliver.order.security.SecurityConstants;
 import com.deliver.order.security.SecurityHandler;
 import com.deliver.order.service.OrderService;
 import com.deliver.order.web.API;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,8 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(path = API.V1 + "/order", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "order", description = "Order service")
+//@Operation
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
