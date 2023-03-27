@@ -3,8 +3,6 @@ package com.deliver.order.mapper;
 import com.deliver.order.domain.Order;
 import com.deliver.order.dto.CreateOrderRequest;
 import com.deliver.order.dto.OrderDTO;
-import com.deliver.order.mapper.kafka.KafkaMapper;
-import org.deliver.order.OrderContract;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,7 +11,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface OrderMapper extends KafkaMapper<OrderDTO, OrderContract> {
+public interface OrderMapper {
     Order toEntity(OrderDTO orderDTO);
 
     @Mapping(target = "id", ignore = true)

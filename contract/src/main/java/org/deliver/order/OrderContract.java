@@ -13,8 +13,6 @@ public class OrderContract {
 
     private UUID id;
     private OrderState state;
-    private String targetAddress;
-
     private String createdBy;
     private String createdAt;
 }
