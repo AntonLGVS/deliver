@@ -27,4 +27,14 @@ public class SecurityHandler {
         }
         return DEFAULT_PERMISSION;
     }
+
+    @SuppressWarnings("unchecked")
+    public boolean hasPermission(Object obj) {
+        for (SecurityValidator<Object> validator : (Set<SecurityValidator<Object>>) (Object) validators) {
+            if (validator.isSupport(obj)) {
+                return validator.check(obj);
+            }
+        }
+        return DEFAULT_PERMISSION;
+    }
 }

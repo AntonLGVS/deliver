@@ -6,4 +6,7 @@ import lombok.experimental.UtilityClass;
 public class SecurityConstants {
     public static final String CHECK_PERMISSION = "@security.hasPermission(returnObject)";
     public static final String IS_ADMIN = "hasRole('ADMIN')";
+
+    public static final String IS_COURIER = "hasRole('COURIER')";
+    public static final String NOT_COURIER = "!" + IS_COURIER;
 }
