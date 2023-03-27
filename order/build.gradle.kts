@@ -30,10 +30,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.kafka:spring-kafka")
-    implementation("org.liquibase:liquibase-core")
+
+    // JAKARTA
     implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
     implementation("jakarta.validation:jakarta.validation-api:${project.properties["versions.jakarta"]}")
-    runtimeOnly("org.postgresql:postgresql")
 
     // SWAGGER
 //    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
@@ -41,6 +41,12 @@ dependencies {
 //    implementation("org.springdoc:springdoc-openapi-core:1.1.49")
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4")
 //    developmentOnly("org.springdoc:springdoc-openapi-security:1.6.15")
+
+    // MIGRATION
+    implementation("org.liquibase:liquibase-core")
+
+    // POSTGRES
+    runtimeOnly("org.postgresql:postgresql")
 
     // LOMBOK
     compileOnly("org.projectlombok:lombok")
