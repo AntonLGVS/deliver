@@ -5,7 +5,7 @@ server:
 # DATABASE
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/deliver
+    url: jdbc:postgresql://${ORDERS_DATABASE_URI:localhost:5432/deliver}
     schema: orders
     username: postgres
     password: postgres
@@ -16,10 +16,21 @@ spring:
   jpa:
     open-in-view: false
 
+# KAFKA PROPERTIES
+  kafka:
+    bootstrap-servers: ${ORDERS_KAFKA_SERVERS:localhost:9092}
+    producer:
+      client-id: aasdadsadasdads
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      group-id: ${ORDERS_GROUP_ID:local}
+
 # KAFKA TOPICS
 topic:
   order:
-    order-topic: com.deliver.order-service.v1.order
+    order-topic-out: com.deliver.order-service.v1.order
+    order-status-in: com.deliver.tracked-service.v1.order-status
 
 # SWAGGER
 springdoc.swagger-ui.path: /swagger-ui

@@ -1,4 +1,4 @@
-package com.deliver.order.kafka.producer;
+package com.deliver.order.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,7 @@ public class KafkaAPI {
     @Getter
     @AllArgsConstructor
     public static class Order {
-        private String orderTopic;
+        private String orderTopicOut;
+        private String orderStatusIn;
     }
 }

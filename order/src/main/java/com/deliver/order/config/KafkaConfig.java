@@ -1,6 +1,6 @@
 package com.deliver.order.config;
 
-import com.deliver.order.kafka.producer.KafkaAPI;
+import com.deliver.order.kafka.KafkaAPI;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

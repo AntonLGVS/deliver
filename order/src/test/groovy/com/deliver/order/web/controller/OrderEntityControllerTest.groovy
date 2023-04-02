@@ -4,7 +4,7 @@ import com.deliver.order.config.security.SecurityConfig
 import com.deliver.order.dto.OrderDTO
 import com.deliver.order.security.SecurityHandler
 import com.deliver.order.security.validators.TrackedValidator
-import com.deliver.order.service.OrderService
+import com.deliver.order.service.order.OrderService
 import com.deliver.order.web.API
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebMvcTest(controllers = [OrderController])
 @Import([SecurityConfig, SecurityHandler, TrackedValidator])
-class OrderControllerTest extends Specification {
+class OrderEntityControllerTest extends Specification {
 
     @Autowired
     protected MockMvc mvc

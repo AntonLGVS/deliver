@@ -1,22 +1,21 @@
 package com.deliver.order.web.controller;
 
 
-import com.deliver.order.bpm.OrderState;
 import com.deliver.order.dto.CreateOrderRequest;
 import com.deliver.order.dto.OrderDTO;
 import com.deliver.order.security.SecurityConstants;
 import com.deliver.order.security.SecurityHandler;
-import com.deliver.order.service.OrderService;
+import com.deliver.order.service.order.OrderService;
 import com.deliver.order.web.API;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +25,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -49,42 +48,49 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    public List<OrderDTO> getAllForCurrentUser(@AuthenticationPrincipal User user) {
-        return orderService.getAllForCurrentUser(user.getUsername());
+    public List<OrderDTO> getAllForCurrentUser(@AuthenticationPrincipal UserDetails user) {
+        return orderService.getAllForUser(user.getUsername());
     }
 
-    @GetMapping("/all-admin")
+    @GetMapping("/admin/all")
     @PreAuthorize(SecurityConstants.IS_ADMIN)
-    public List<OrderDTO> getAll() {
-        return orderService.getAll();
+    public List<OrderDTO> getAll(@RequestParam(value = "user", required = false) String userId) {
+        if (StringUtils.hasText(userId)) {
+            return orderService.getAllForUser(userId);
+        } else {
+            return orderService.getAll();
+        }
+
     }
 
     @PostMapping
     @PreAuthorize(SecurityConstants.NOT_COURIER)
-    public OrderDTO createOrder(@RequestBody CreateOrderRequest orderRequest) {
-        return orderService.createOrder(orderRequest);
+    public Mono<ResponseEntity<OrderDTO>> createOrder(@RequestBody CreateOrderRequest orderRequest) {
+        return orderService.createOrder(orderRequest)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.badRequest().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderDTO> changeTargetAddress(
+    @PreAuthorize(SecurityConstants.NOT_COURIER)
+    public Mono<ResponseEntity<OrderDTO>> changeTargetAddress(
             @PathVariable("id") UUID orderId,
             @RequestParam("dest") String dest) {
 
-        Optional<OrderDTO> dto = orderService.getOrder(orderId)
-                .map(order -> {
-                    if (!securityHandler.hasPermission(order)) {
-                        throw new AccessDeniedException("403 returned");
-                    }
-                    return order.getId();
-                })
-                .flatMap(id -> orderService.setTarget(id, dest));
-
-        return ResponseEntity.of(dto);
+        // TODO: security by user
+        return orderService.editTargetAddress(orderId, dest)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OrderDTO> cancelOrderByUser(@PathVariable("id") UUID orderId) {
-        return ResponseEntity.of(orderService.setOrderState(orderId, OrderState.CANCELLED));
+    @PreAuthorize(SecurityConstants.NOT_COURIER)
+    public Mono<ResponseEntity<Void>> cancelOrderByUser(@PathVariable("id") UUID orderId) {
+
+        // TODO: security by user
+        return orderService.cancelOrder(orderId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
 }

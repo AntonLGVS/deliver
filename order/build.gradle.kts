@@ -1,7 +1,7 @@
 plugins {
     java
     groovy
-    id("org.springframework.boot") version "3.0.4"
+    id("org.springframework.boot") version "3.0.5"
     id("io.spring.dependency-management") version "1.1.0"
 }
 
@@ -30,6 +30,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.kafka:spring-kafka")
+
+    // STATEMACHINE
+    implementation("org.springframework.statemachine:spring-statemachine-starter")
 
     // JAKARTA
     implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
@@ -78,6 +81,7 @@ dependencies {
 
 dependencyManagement {
     imports {
+        mavenBom("org.springframework.statemachine:spring-statemachine-bom:${project.properties["versions.stateMachine"]}")
         mavenBom("org.testcontainers:testcontainers-bom:${project.properties["versions.testContainer"]}")
     }
 }

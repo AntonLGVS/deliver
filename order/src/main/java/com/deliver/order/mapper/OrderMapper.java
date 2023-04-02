@@ -1,8 +1,9 @@
 package com.deliver.order.mapper;
 
-import com.deliver.order.domain.Order;
+import com.deliver.order.domain.OrderEntity;
 import com.deliver.order.dto.CreateOrderRequest;
 import com.deliver.order.dto.OrderDTO;
+import org.deliver.order.OrderContract;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,7 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface OrderMapper {
-    Order toEntity(OrderDTO orderDTO);
+    OrderEntity toEntity(OrderDTO orderDTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "state", ignore = true)
@@ -20,10 +21,14 @@ public interface OrderMapper {
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    Order toEntity(CreateOrderRequest orderRequest);
+    OrderEntity toEntity(CreateOrderRequest orderRequest);
 
-    OrderDTO toDto(Order order);
+    OrderDTO toDto(OrderEntity order);
+
+    OrderContract toContract(OrderEntity entity);
+
+    OrderContract toContract(OrderDTO entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Order partialUpdate(OrderDTO orderDTO, @MappingTarget Order order);
+    OrderEntity partialUpdate(OrderDTO orderDTO, @MappingTarget OrderEntity order);
 }
