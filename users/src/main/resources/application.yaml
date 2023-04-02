@@ -1,1 +1,20 @@
+# APPLICATION
+server:
+  port: 8080
+
+# DATABASE
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/deliver
+    schema: users
+    username: postgres
+    password: postgres
+  flyway:
+    schemas: users
+  liquibase:
+    enabled: false
+#    defaultSchema: users
+  # JPA
+  jpa:
+    open-in-view: false
 

@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "3.0.4"
 	id("io.spring.dependency-management") version "1.1.0"
-	kotlin("jvm") version "1.7.22"
-	kotlin("plugin.spring") version "1.7.22"
+	kotlin("jvm") version "1.8.10"
+	kotlin("plugin.spring") version "1.8.10"
 }
 
 group = "com.deliver"
@@ -16,28 +16,52 @@ repositories {
 }
 
 dependencies {
+	// SPRING
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-webflux")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+//	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+	// JAKARTA
+	implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
+	implementation("jakarta.validation:jakarta.validation-api:${project.properties["versions.jakarta"]}")
+
+	// KEYCLOAK
+	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
+	implementation("org.keycloak:keycloak-dependencies-server-all:21.0.1")
+//
+//	implementation("org.springframework.security:spring-security-config")
+//	implementation("org.springframework.security:spring-security-oauth2-jose")
+//	implementation("org.springframework.security:spring-security-oauth2-resource-server")
+
+	// KOTLIN MODULES
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-	implementation("org.springframework.kafka:spring-kafka")
+//	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+//	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+
+	// MIGRATION
+	implementation("org.flywaydb:flyway-core")
+
+	// UTILITIES AND DEV TOOLS
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+	// POSTGRES
 	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("org.postgresql:r2dbc-postgresql")
+//	runtimeOnly("org.postgresql:r2dbc-postgresql")
+
+	// TESTING
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.security:spring-security-test")
+//	testImplementation("io.projectreactor:reactor-test")
 }
 
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
+		jvmTarget = java.sourceCompatibility.majorVersion
 	}
 }
 
