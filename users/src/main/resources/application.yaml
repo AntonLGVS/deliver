@@ -18,3 +18,16 @@ spring:
   jpa:
     open-in-view: false
 
+### Keycloak Configuration
+keycloak:
+  auth-server-url: http://localhost:8080/auth/
+  realm: external
+  resource: external-client
+  public-client: false
+  bearer-only: false
+  principal-attribute: preferred_username
+  credentials.secret: xxxxxxxxx
+  use-resource-role-mappings: true
+  confidential-port: 8081
+  ssl-required: none
+

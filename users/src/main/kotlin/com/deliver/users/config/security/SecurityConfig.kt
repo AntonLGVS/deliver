@@ -6,4 +6,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableMethodSecurity
 @Configuration(proxyBeanMethods = false)
 class SecurityConfig {
+
+//    @Bean
+//    fun keycloak() = KeycloakBuilder.builder()
+//        .grantType("password")
 }

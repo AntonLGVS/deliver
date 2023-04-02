@@ -28,8 +28,9 @@ dependencies {
 	implementation("jakarta.validation:jakarta.validation-api:${project.properties["versions.jakarta"]}")
 
 	// KEYCLOAK
-	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
-	implementation("org.keycloak:keycloak-dependencies-server-all:21.0.1")
+//	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
+//	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
+	implementation("org.keycloak:keycloak-admin-client:21.0.1")
 //
 //	implementation("org.springframework.security:spring-security-config")
 //	implementation("org.springframework.security:spring-security-oauth2-jose")
@@ -56,6 +57,12 @@ dependencies {
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.security:spring-security-test")
 //	testImplementation("io.projectreactor:reactor-test")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.keycloak.bom:keycloak-adapter-bom:12.0.3")
+	}
 }
 
 tasks.withType<KotlinCompile> {
