@@ -8,7 +8,7 @@ import java.util.UUID;
 public class OrderContract {
 
     public enum OrderState {
-        NEW, PENDING, IN_PROGRESS, DELIVERED, CANCELLED, UNKNOWN
+        NEW, CREATED, IN_PROGRESS, DELIVERED, CANCELLED, UNKNOWN
     }
 
     private UUID id;
