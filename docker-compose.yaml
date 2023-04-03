@@ -1,0 +1,140 @@
+version: '2'
+
+services:
+# GATEWAY MICROSERVICE
+  deliver_gateway:
+    container_name: deliver_gateway
+    image: docker.io/library/gateway:0.0.1-SNAPSHOT
+    environment:
+      - GATEWAY_PORT=8080
+      - GATEWAY_DATABASE_URI=deliver_postgres:5432
+      - GATEWAY_KAFKA_SERVERS=deliver_kafka:9090
+      - GATEWAY_GROUP_ID=cluster_group
+    ports:
+      - 8080:8080
+    networks:
+      - deliver-network
+
+# ORDER MICROSERVICE
+  deliver_orders:
+    container_name: deliver_order
+    image: docker.io/library/order:0.0.1-SNAPSHOT
+    environment:
+      - ORDERS_PORT=8081
+      - ORDERS_DATABASE_URI=deliver_postgres:5432
+      - ORDERS_KAFKA_SERVERS=deliver_kafka:9090
+      - ORDERS_GROUP_ID=cluster_group
+    ports:
+      - 8081:8081
+    networks:
+      - deliver-network
+
+# USERS MICROSERVICE
+  deliver_users:
+    container_name: deliver_users
+    image: docker.io/library/users:0.0.1-SNAPSHOT
+    environment:
+      - USERS_PORT=8082
+      - USERS_DATABASE_URI=deliver_postgres:5432
+      - USERS_AUTH_HOST=http://localhost:8082
+      - USERS_CONFIDENTIAL_PORT=8090
+      - USERS_KAFKA_SERVERS=deliver_kafka:9090
+      - USERS_GROUP_ID=cluster_group
+    ports:
+      - 8082:8082
+    networks:
+      - deliver-network
+
+# GATEWAY MICROSERVICE
+#  deliver_dictionary:
+#    container_name: deliver_dictionary
+#    image: docker.io/library/dictionary:0.0.1-SNAPSHOT
+#    environment:
+#      - DICTIONARY_PORT=8083
+#      - DICTIONARY_DATABASE_URI=deliver_postgres:5432
+#      - DICTIONARY_KAFKA_SERVERS=deliver_kafka:9090
+#      - DICTIONARY_GROUP_ID=cluster_group
+#    ports:
+#      - 8083:8083
+#    networks:
+#      - deliver-network
+
+  deliver_postgres:
+    image: postgres:latest
+    container_name: deliver_postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - deliver-network
+    environment:
+      - 'POSTGRES_DB=deliver'
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
+#    command: [ "postgres", "-c", "wal_level=logical" ]
+    volumes:
+      - ./order/src/main/resources/db/changelog/init.sql:/docker-entrypoint-initdb.d/init.sql
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+
+  deliver_keycloak:
+    image: quay.io/keycloak/keycloak:legacy
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: deliver_postgres
+      DB_DATABASE: deliver
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SCHEMA: keycloak
+      KEYCLOAK_USER: user
+      KEYCLOAK_PASSWORD: user
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8084:8080"
+      - "9990:9990"
+    networks:
+      - deliver-network
+    depends_on:
+      - deliver_postgres
+
+  deliver_zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: deliver_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - deliver-network
+
+  deliver_kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: deliver_kafka
+    ports:
+      - "9092:9092"
+      - "9997:9997"
+    networks:
+      - deliver-network
+    depends_on:
+      - deliver_zookeeper
+    environment:
+      KAFKA_CLUSTER_ID: local
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT, EXTERNAL:PLAINTEXT"
+      KAFKA_LISTENERS: "INTERNAL://deliver_kafka:9090, EXTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://deliver_kafka:9090, EXTERNAL://localhost:9092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_HOSTNAME: deliver_kafka
+
+networks:
+  deliver-network:
+    driver: bridge

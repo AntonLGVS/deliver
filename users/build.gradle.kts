@@ -36,6 +36,9 @@ dependencies {
 //	implementation("org.springframework.security:spring-security-oauth2-jose")
 //	implementation("org.springframework.security:spring-security-oauth2-resource-server")
 
+	// SWAGGER
+	implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4")
+
 	// KOTLIN MODULES
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 //	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")

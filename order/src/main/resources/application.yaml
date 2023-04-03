@@ -1,11 +1,11 @@
 # APPLICATION
 server:
-  port: 8080
+  port: ${ORDERS_PORT:8080}
 
 # DATABASE
 spring:
   datasource:
-    url: jdbc:postgresql://${ORDERS_DATABASE_URI:localhost:5432/deliver}
+    url: jdbc:postgresql://${ORDERS_DATABASE_URI:localhost:5432}/deliver
     schema: orders
     username: postgres
     password: postgres
@@ -20,7 +20,7 @@ spring:
   kafka:
     bootstrap-servers: ${ORDERS_KAFKA_SERVERS:localhost:9092}
     producer:
-      client-id: aasdadsadasdads
+      client-id: ${ORDERS_KAFKA_CLIENT_ID:local_developer}
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
