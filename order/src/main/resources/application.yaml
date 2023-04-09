@@ -29,7 +29,8 @@ spring:
 # KAFKA TOPICS
 topic:
   order:
-    order-topic-out: com.deliver.order-service.v1.order
+    order-topic: com.deliver.order-service.v1.order
+    courier-management: com.deliver.order-service.v1.courier-management
     order-status-in: com.deliver.tracked-service.v1.order-status
 
 # SWAGGER
