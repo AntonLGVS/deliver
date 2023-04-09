@@ -1,19 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "3.0.4"
-	id("io.spring.dependency-management") version "1.1.0"
-	kotlin("jvm") version "1.8.10"
-	kotlin("plugin.spring") version "1.8.10"
+	id("org.springframework.boot")
+	id("io.spring.dependency-management")
+	kotlin("jvm")
+	kotlin("plugin.spring")
 }
 
 group = "com.deliver"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
-
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	// SPRING
@@ -30,7 +26,7 @@ dependencies {
 	// KEYCLOAK
 //	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
 //	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
-	implementation("org.keycloak:keycloak-admin-client:21.0.1")
+	implementation("org.keycloak:keycloak-admin-client:21.0.2")
 //
 //	implementation("org.springframework.security:spring-security-config")
 //	implementation("org.springframework.security:spring-security-oauth2-jose")

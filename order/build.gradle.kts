@@ -1,8 +1,8 @@
 plugins {
     java
     groovy
-    id("org.springframework.boot") version "3.0.5"
-    id("io.spring.dependency-management") version "1.1.0"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 }
 
 group = "com.deliver"
@@ -13,10 +13,6 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -39,11 +35,7 @@ dependencies {
     implementation("jakarta.validation:jakarta.validation-api:${project.properties["versions.jakarta"]}")
 
     // SWAGGER
-//    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
-//    implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
-//    implementation("org.springdoc:springdoc-openapi-core:1.1.49")
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4")
-//    developmentOnly("org.springdoc:springdoc-openapi-security:1.6.15")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
     // MIGRATION
     implementation("org.liquibase:liquibase-core")
