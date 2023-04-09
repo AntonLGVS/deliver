@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +36,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public List<OrderDTO> getAllForUser(String username) {
-        return repository.findByCreatedBy(username)
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
+        try(Stream<OrderEntity> orders = repository.findByCreatedBy(username)) {
+            return orders.map(mapper::toDto)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public List<OrderDTO> getAllForCourier(String username) {
+        try(Stream<OrderEntity> orders = repository.findByCourier(username)) {
+            return orders.map(mapper::toDto)
+                    .collect(Collectors.toList());
+        }
     }
 
     @Override
@@ -77,5 +88,11 @@ public class OrderServiceImpl implements OrderService {
     public Mono<Void> sendAction(UUID orderId, OrderBPM.Action action) {
         OrderCommandExchanger<Void, Void> request = OrderRequestFactory.eventOrderRequest(orderId, action);
         return stateMachineDispatcher.sendOrderEvent(request).then();
+    }
+
+    @Override
+    public Mono<Boolean> assignCourier(UUID orderId, String courierId) {
+        OrderCommandExchanger<String, Boolean> request = OrderRequestFactory.assignCourier(orderId, courierId);
+        return stateMachineDispatcher.sendOrderEvent(request).map(OutboundResponse::result);
     }
 }

@@ -1,4 +1,8 @@
 package com.deliver.order.dto;
 
-public record CreateOrderRequest(String targetAddress, String comment) {
+import io.swagger.v3.oas.annotations.Parameter;
+
+public record CreateOrderRequest(
+        @Parameter(description = "Address") String targetAddress,
+        @Parameter(description = "Comment for order") String comment) {
 }

@@ -16,7 +16,8 @@ public class KafkaAPI {
     @Getter
     @AllArgsConstructor
     public static class Order {
-        private String orderTopicOut;
+        private String orderTopic;
+        private String courierManagement;
         private String orderStatusIn;
     }
 }

@@ -29,8 +29,8 @@ public class OrderEventHandler {
     public void createEvent(
             @EventHeader(CtxAttributes.PAYLOAD) OrderEntity order,
             @EventHeader(CtxAttributes.REQUEST) OrderCommandExchanger<OrderEntity, OrderEntity> exchanger,
-            StateMachine<OrderBPM.State, OrderBPM.Action> stateMachine
-    ) {
+            StateMachine<OrderBPM.State, OrderBPM.Action> stateMachine) {
+
         order.setState(stateMachine.getInitialState().getId());
         order.setId(stateMachine.getUuid());
         OrderEntity savedOrder = repository.save(order);
@@ -46,6 +46,7 @@ public class OrderEventHandler {
     public void editAddress(
             @EventHeader(value = CtxAttributes.PAYLOAD) String address,
             @EventHeader(value = CtxAttributes.REQUEST) OrderCommandExchanger<String, OrderEntity> exchanger) {
+
         repository.findById(exchanger.getId())
                 .ifPresent(order -> {
                     order.setTargetAddress(exchanger.getPayload());
@@ -58,12 +59,25 @@ public class OrderEventHandler {
                 });
     }
 
+    @OrderOnTransition(source = OrderBPM.State.NEW, target = OrderBPM.State.IN_PROGRESS)
+    public void assignCourier(@EventHeader(value = CtxAttributes.PAYLOAD) String courierId,
+                              @EventHeader(value = CtxAttributes.REQUEST) OrderCommandExchanger<String, OrderEntity> exchanger) {
+
+        repository.findById(exchanger.getId())
+                .ifPresent(order -> {
+                    order.setCourier(courierId);
+
+                    // Acquire courier
+                    publisher.engageCourier(order);
+        });
+    }
+
     @OrderOnTransition(target = OrderBPM.State.CANCELLED)
     @Transactional
-    public void editAddress(
-            @EventHeader(value = CtxAttributes.PAYLOAD_ID) UUID orderId) {
-        // Publish CREATED ORDER to KAFKA
+    public void cancelOrder(@EventHeader(value = CtxAttributes.PAYLOAD_ID) UUID orderId) {
+
+        // Release courier
         repository.findById(orderId)
-                .ifPresent(publisher::publishOrder);
+                .ifPresent(publisher::terminateOrder);
     }
 }

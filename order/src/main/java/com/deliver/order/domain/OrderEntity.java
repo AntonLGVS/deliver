@@ -34,5 +34,8 @@ public class OrderEntity extends TrackedEntity {
     @NotNull
     @Column(nullable = false)
     private String targetAddress;
+
     private String comment;
+
+    private String courier;
 }

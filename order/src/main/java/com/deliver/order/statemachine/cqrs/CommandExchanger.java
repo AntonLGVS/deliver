@@ -4,6 +4,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.StateMachineEventResult;
 import reactor.core.publisher.Mono;
@@ -103,6 +104,9 @@ public class CommandExchanger<STATE, EVENT, PAYLOAD, RESULT, SELF extends Comman
 
     @Override
     public RESULT result() {
+        if (resultEvent.getResultType() == StateMachineEventResult.ResultType.DENIED) {
+            throw new AccessDeniedException("Current Action can not apply to this order.");
+        }
         return result;
     }
 

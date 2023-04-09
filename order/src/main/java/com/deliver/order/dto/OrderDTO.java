@@ -13,4 +13,5 @@ public class OrderDTO extends TrackedDTO {
     private OrderBPM.State state;
     private String targetAddress;
     private String comment;
+    private String courier;
 }

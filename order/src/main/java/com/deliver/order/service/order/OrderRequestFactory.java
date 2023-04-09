@@ -23,5 +23,11 @@ public class OrderRequestFactory {
         return new OrderCommandExchanger<Void, Void>(event, Void.class)
                 .setId(orderId);
     }
+
+    public static OrderCommandExchanger<String, Boolean> assignCourier(UUID orderId, String courierId) {
+        return new OrderCommandExchanger<String, Boolean>(OrderBPM.Action.ASSIGN, Boolean.class)
+                .setId(orderId)
+                .setPayload(courierId);
+    }
 }
 

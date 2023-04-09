@@ -23,4 +23,8 @@ public interface OrderService {
     Mono<Void> cancelOrder(UUID orderId);
 
     Mono<Void> sendAction(UUID orderId, OrderBPM.Action action);
+
+    Mono<Boolean> assignCourier(UUID orderId, String courierId);
+
+    List<OrderDTO> getAllForCourier(String username);
 }

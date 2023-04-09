@@ -10,4 +10,5 @@ import java.util.stream.Stream;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
     Stream<OrderEntity> findByCreatedBy(String createdBy);
+    Stream<OrderEntity> findByCourier(String courier);
 }
