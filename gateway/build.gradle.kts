@@ -14,17 +14,28 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 extra["springCloudVersion"] = "2022.0.1"
 
 dependencies {
+	// SPRING
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+	// SPRING CLOUD GATEWAY
+	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
+	implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j")
+
+	// OBJECT MAPPER
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+	// KOTLIN
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-	implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j")
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
+
+	// DEVTOOLS
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+	// TESTING
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework.security:spring-security-test")
