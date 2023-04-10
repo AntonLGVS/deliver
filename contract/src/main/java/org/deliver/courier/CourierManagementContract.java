@@ -11,6 +11,6 @@ public class CourierManagementContract {
         ACQUIRED, RELEASED
     }
     private UUID orderId;
-    private String courierId;
+    private UUID courierId;
     private Status status;
 }
