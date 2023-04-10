@@ -37,5 +37,5 @@ public class OrderEntity extends TrackedEntity {
 
     private String comment;
 
-    private String courier;
+    private UUID courier;
 }

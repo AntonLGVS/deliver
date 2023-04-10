@@ -24,7 +24,7 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      group-id: ${ORDERS_GROUP_ID:local}
+      group-id: ${ORDERS_GROUP_ID:orders_local}
 
 # KAFKA TOPICS
 topic:

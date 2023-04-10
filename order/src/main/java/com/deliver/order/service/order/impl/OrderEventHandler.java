@@ -60,7 +60,7 @@ public class OrderEventHandler {
     }
 
     @OrderOnTransition(source = OrderBPM.State.NEW, target = OrderBPM.State.IN_PROGRESS)
-    public void assignCourier(@EventHeader(value = CtxAttributes.PAYLOAD) String courierId,
+    public void assignCourier(@EventHeader(value = CtxAttributes.PAYLOAD) UUID courierId,
                               @EventHeader(value = CtxAttributes.REQUEST) OrderCommandExchanger<String, OrderEntity> exchanger) {
 
         repository.findById(exchanger.getId())
