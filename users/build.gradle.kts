@@ -5,17 +5,27 @@ plugins {
 	id("io.spring.dependency-management")
 	kotlin("jvm")
 	kotlin("plugin.spring")
+	kotlin("kapt")
 }
 
 group = "com.deliver"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
+//configurations {
+//	compileOnly {
+//		extendsFrom(configurations.kapt.get())
+//	}
+//}
+
 dependencies {
+	// CONTRACT
+	implementation(project(":contract"))
+
 	// SPRING
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-//	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
@@ -26,7 +36,7 @@ dependencies {
 	// KEYCLOAK
 //	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
 //	implementation("org.keycloak:keycloak-spring-boot-starter:21.0.1")
-	implementation("org.keycloak:keycloak-admin-client:21.0.2")
+//	implementation("org.keycloak:keycloak-admin-client:21.0.2")
 //
 //	implementation("org.springframework.security:spring-security-config")
 //	implementation("org.springframework.security:spring-security-oauth2-jose")
@@ -43,6 +53,10 @@ dependencies {
 
 	// MIGRATION
 	implementation("org.flywaydb:flyway-core")
+
+	// MAPSTRUCT
+	implementation("org.mapstruct:mapstruct:${project.properties["versions.mapstruct"]}")
+	kapt("org.mapstruct:mapstruct-processor:${project.properties["versions.mapstruct"]}")
 
 	// UTILITIES AND DEV TOOLS
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

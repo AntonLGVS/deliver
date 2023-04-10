@@ -18,9 +18,24 @@ spring:
   jpa:
     open-in-view: false
 
+  # KAFKA PROPERTIES
+  kafka:
+    bootstrap-servers: ${ORDERS_KAFKA_SERVERS:localhost:9092}
+#    producer:
+#      client-id: ${ORDERS_KAFKA_CLIENT_ID:local_developer}
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      group-id: ${ORDERS_GROUP_ID:users_local}
+
+# KAFKA TOPICS
+topic:
+  courier:
+    courier-management: com.deliver.order-service.v1.courier-management
+
 ### Keycloak Configuration
 keycloak:
-  auth-server-url: {USERS_AUTH_HOST:http://localhost:8080}/auth/
+  auth-server-url: ${USERS_AUTH_HOST:http://localhost:8080}/auth/
   realm: external
   resource: external-client
   public-client: false
