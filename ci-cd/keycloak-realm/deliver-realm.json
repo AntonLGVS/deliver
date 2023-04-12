@@ -1,0 +1,138 @@
+{
+  "realm": "deliver",
+  "enabled": true,
+  "users": [
+    {
+      "username": "deliver_admin",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin"
+        }
+      ],
+      "realmRoles": [
+        "admin", "user", "courier"
+      ]
+    },
+    {
+      "username": "deliver_courier",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "courier"
+        }
+      ],
+      "realmRoles": [
+        "courier"
+      ]
+    },
+    {
+      "username": "deliver_user",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user"
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator"
+      },
+      {
+        "name": "courier",
+        "description": "Default courier"
+      },
+      {
+        "name": "user",
+        "description": "Default user"
+      }
+    ]
+  },
+  "defaultRoles": [
+    "user"
+  ],
+  "clients": [
+    {
+      "clientId": "deliver.service.gateway",
+      "enabled": true,
+      "authorizationServicesEnabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "deliver.service.gateway-secret",
+      "redirectUris": [
+        "http://localhost:8080/*"
+      ],
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "access_roles"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "deliver.service.users",
+      "enabled": true,
+      "authorizationServicesEnabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "deliver.service.users-secret",
+      "redirectUris": [
+        "http://localhost:8080/*"
+      ],
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "access_roles"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "deliver.service.orders",
+      "enabled": true,
+      "authorizationServicesEnabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "deliver.service.orders-secret",
+      "redirectUris": [
+        "http://localhost:8080/*"
+      ],
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "access_roles"
+          }
+        }
+      ]
+    }
+  ]
+}

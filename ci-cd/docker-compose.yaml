@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
 # GATEWAY MICROSERVICE
@@ -6,10 +6,10 @@ services:
     container_name: deliver_gateway
     image: docker.io/library/gateway:0.0.1-SNAPSHOT
     environment:
-      - GATEWAY_PORT=8080
-      - GATEWAY_DATABASE_URI=deliver_postgres:5432
-      - GATEWAY_KAFKA_SERVERS=deliver_kafka:9090
-      - GATEWAY_GROUP_ID=cluster_group
+      GATEWAY_PORT: 8080
+      GATEWAY_DATABASE_URI: deliver_postgres:5432
+      GATEWAY_KAFKA_SERVERS: deliver_kafka:9090
+      GATEWAY_GROUP_ID: cluster_group
     ports:
       - 8080:8080
     networks:
@@ -20,10 +20,10 @@ services:
     container_name: deliver_order
     image: docker.io/library/order:0.0.1-SNAPSHOT
     environment:
-      - ORDERS_PORT=8081
-      - ORDERS_DATABASE_URI=deliver_postgres:5432
-      - ORDERS_KAFKA_SERVERS=deliver_kafka:9090
-      - ORDERS_GROUP_ID=cluster_group
+      ORDERS_PORT: 8081
+      ORDERS_DATABASE_URI: deliver_postgres:5432
+      ORDERS_KAFKA_SERVERS: deliver_kafka:9090
+      ORDERS_GROUP_ID: cluster_group
     ports:
       - 8081:8081
     networks:
@@ -34,12 +34,12 @@ services:
     container_name: deliver_users
     image: docker.io/library/users:0.0.1-SNAPSHOT
     environment:
-      - USERS_PORT=8082
-      - USERS_DATABASE_URI=deliver_postgres:5432
-      - USERS_AUTH_HOST=http://localhost:8082
-      - USERS_CONFIDENTIAL_PORT=8090
-      - USERS_KAFKA_SERVERS=deliver_kafka:9090
-      - USERS_GROUP_ID=cluster_group
+      USERS_PORT: 8082
+      USERS_DATABASE_URI: deliver_postgres:5432
+      USERS_AUTH_HOST: http://localhost:8082
+      USERS_CONFIDENTIAL_PORT: 8090
+      USERS_KAFKA_SERVERS: deliver_kafka:9090
+      USERS_GROUP_ID: cluster_group
     ports:
       - 8082:8082
     networks:
@@ -67,12 +67,12 @@ services:
     networks:
       - deliver-network
     environment:
-      - 'POSTGRES_DB=deliver'
-      - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_PASSWORD=postgres'
+      POSTGRES_DB: deliver
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 #    command: [ "postgres", "-c", "wal_level=logical" ]
     volumes:
-      - ./order/src/main/resources/db/changelog/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       resources:
         limits:
@@ -80,21 +80,25 @@ services:
           memory: 1G
 
   deliver_keycloak:
-    image: quay.io/keycloak/keycloak:legacy
+    image: quay.io/keycloak/keycloak:latest
+    container_name: deliver_keycloak
+    command:
+      - start-dev
+      - --import-realm
     environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: deliver_postgres
-      DB_DATABASE: deliver
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_SCHEMA: keycloak
-      KEYCLOAK_USER: user
-      KEYCLOAK_PASSWORD: user
+      KC_DB: postgres
+      KC_DB_URL_HOST: deliver_postgres
+      KC_DB_URL_DATABASE: deliver
+      KC_DB_SCHEMA: keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+#      KEYCLOAK_IMPORT: /tmp/realm-import.json
+    volumes:
+      - ./keycloak-realm:/opt/keycloak/data/import
     ports:
       - "8084:8080"
-      - "9990:9990"
     networks:
       - deliver-network
     depends_on:
