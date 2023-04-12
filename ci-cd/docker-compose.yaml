@@ -1,71 +1,91 @@
 version: '3'
+name: deliver-infrastructure
 
 services:
-# GATEWAY MICROSERVICE
-  deliver_gateway:
-    container_name: deliver_gateway
+  # GATEWAY MICROSERVICE
+  deliver-gateway:
+    container_name: deliver-gateway
     image: docker.io/library/gateway:0.0.1-SNAPSHOT
     environment:
+#      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       GATEWAY_PORT: 8080
-      GATEWAY_DATABASE_URI: deliver_postgres:5432
-      GATEWAY_KAFKA_SERVERS: deliver_kafka:9090
-      GATEWAY_GROUP_ID: cluster_group
+#      GATEWAY_ACCESS_CLIENT_ID:
+#      GATEWAY_ACCESS_CLIENT_SECRET:
+      KEYCLOAK_ISSUER: http://host.docker.internal:8090/realms/deliver
     ports:
-      - 8080:8080
+      - 8081:8080
+      - 5005:5005
     networks:
       - deliver-network
+    restart: on-failure
+    depends_on:
+      - deliver-keycloak
 
-# ORDER MICROSERVICE
-  deliver_orders:
-    container_name: deliver_order
+  # ORDER MICROSERVICE
+  deliver-orders:
+    container_name: deliver-order
     image: docker.io/library/order:0.0.1-SNAPSHOT
     environment:
-      ORDERS_PORT: 8081
-      ORDERS_DATABASE_URI: deliver_postgres:5432
-      ORDERS_KAFKA_SERVERS: deliver_kafka:9090
-      ORDERS_GROUP_ID: cluster_group
+      ORDERS_PORT: 8080
+      ORDERS_DATABASE_URI: deliver-postgres:5432
+      ORDERS_KAFKA_SERVERS: deliver-kafka:9090
+      ORDERS_KAFKA_GROUP_ID: orders_cluster_group
+#      ORDERS_ACCESS_CLIENT_ID:
+#      ORDERS_ACCESS_CLIENT_SECRET:
+      KEYCLOAK_ISSUER: http://deliver-keycloak:8090/realms/deliver
     ports:
-      - 8081:8081
+      - 8082:8080
     networks:
       - deliver-network
+    depends_on:
+      - deliver-postgres
+      - deliver-keycloak
+      - deliver-kafka
 
-# USERS MICROSERVICE
-  deliver_users:
-    container_name: deliver_users
+  # USERS MICROSERVICE
+  deliver-users:
+    container_name: deliver-users
     image: docker.io/library/users:0.0.1-SNAPSHOT
     environment:
-      USERS_PORT: 8082
-      USERS_DATABASE_URI: deliver_postgres:5432
-      USERS_AUTH_HOST: http://localhost:8082
-      USERS_CONFIDENTIAL_PORT: 8090
-      USERS_KAFKA_SERVERS: deliver_kafka:9090
-      USERS_GROUP_ID: cluster_group
+      USERS_PORT: 8080
+      USERS_DATABASE_URI: deliver-postgres:5432
+#      USERS_AUTH_HOST: http://localhost:8082
+#      USERS_CONFIDENTIAL_PORT: 8090
+      USERS_KAFKA_SERVERS: deliver-kafka:9090
+      USERS_KAFKA_GROUP_ID: users_cluster_group
+#      USERS_ACCESS_CLIENT_ID:
+#      USERS_ACCESS_CLIENT_SECRET:
+      KEYCLOAK_ISSUER: http://deliver-keycloak:8090/realms/deliver
     ports:
-      - 8082:8082
+      - 8083:8080
     networks:
       - deliver-network
+    depends_on:
+      - deliver-postgres
+      - deliver-keycloak
+      - deliver-kafka
 
 # GATEWAY MICROSERVICE
-#  deliver_dictionary:
-#    container_name: deliver_dictionary
+#  deliver-dictionary:
+#    container_name: deliver-dictionary
 #    image: docker.io/library/dictionary:0.0.1-SNAPSHOT
 #    environment:
 #      - DICTIONARY_PORT=8083
-#      - DICTIONARY_DATABASE_URI=deliver_postgres:5432
-#      - DICTIONARY_KAFKA_SERVERS=deliver_kafka:9090
+#      - DICTIONARY_DATABASE_URI=deliver-postgres:5432
+#      - DICTIONARY_KAFKA_SERVERS=deliver-kafka:9090
 #      - DICTIONARY_GROUP_ID=cluster_group
 #    ports:
 #      - 8083:8083
 #    networks:
 #      - deliver-network
+#    depends_on:
+#      - deliver-postgres
+#      - deliver-keycloak
+#      - deliver-kafka
 
-  deliver_postgres:
+  deliver-postgres:
     image: postgres:latest
-    container_name: deliver_postgres
-    ports:
-      - "5432:5432"
-    networks:
-      - deliver-network
+    container_name: deliver-postgres
     environment:
       POSTGRES_DB: deliver
       POSTGRES_USER: postgres
@@ -73,63 +93,62 @@ services:
 #    command: [ "postgres", "-c", "wal_level=logical" ]
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - deliver-network
     deploy:
       resources:
         limits:
           cpus: "1"
           memory: 1G
 
-  deliver_keycloak:
+  deliver-keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: deliver_keycloak
+    container_name: deliver-keycloak
     command:
       - start-dev
       - --import-realm
     environment:
       KC_DB: postgres
-      KC_DB_URL_HOST: deliver_postgres
+      KC_DB_URL_HOST: deliver-postgres
       KC_DB_URL_DATABASE: deliver
       KC_DB_SCHEMA: keycloak
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: postgres
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-#      KEYCLOAK_IMPORT: /tmp/realm-import.json
+      KC_HTTP_PORT: 8090
+#      KC_HOSTNAME_URL: http://localhost:8081
+#      KC_PROXY: edge
     volumes:
       - ./keycloak-realm:/opt/keycloak/data/import
     ports:
-      - "8084:8080"
+      - "8090:8090"
     networks:
       - deliver-network
     depends_on:
-      - deliver_postgres
+      - deliver-postgres
 
-  deliver_zookeeper:
+  deliver-zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
-    container_name: deliver_zookeeper
+    container_name: deliver-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - deliver-network
 
-  deliver_kafka:
+  deliver-kafka:
     image: confluentinc/cp-kafka:7.0.1
-    container_name: deliver_kafka
-    ports:
-      - "9092:9092"
-      - "9997:9997"
-    networks:
-      - deliver-network
-    depends_on:
-      - deliver_zookeeper
+    container_name: deliver-kafka
     environment:
       KAFKA_CLUSTER_ID: local
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'deliver_zookeeper:2181'
+      KAFKA_ZOOKEEPER_CONNECT: 'deliver-zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT, EXTERNAL:PLAINTEXT"
-      KAFKA_LISTENERS: "INTERNAL://deliver_kafka:9090, EXTERNAL://:9092"
-      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://deliver_kafka:9090, EXTERNAL://localhost:9092"
+      KAFKA_LISTENERS: "INTERNAL://deliver-kafka:9090, EXTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://deliver-kafka:9090, EXTERNAL://localhost:9092"
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
@@ -137,7 +156,14 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_JMX_PORT: 9997
-      KAFKA_JMX_HOSTNAME: deliver_kafka
+      KAFKA_JMX_HOSTNAME: deliver-kafka
+    ports:
+      - "9092:9092"
+      - "9997:9997"
+    networks:
+      - deliver-network
+    depends_on:
+      - deliver-zookeeper
 
 networks:
   deliver-network:

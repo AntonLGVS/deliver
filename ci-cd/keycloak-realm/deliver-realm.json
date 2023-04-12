@@ -70,7 +70,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "deliver.service.gateway-secret",
       "redirectUris": [
-        "http://localhost:8080/*"
+        "http://localhost:8081/*"
       ],
       "protocolMappers": [
         {
@@ -93,9 +93,6 @@
       "protocol": "openid-connect",
       "clientAuthenticatorType": "client-secret",
       "secret": "deliver.service.users-secret",
-      "redirectUris": [
-        "http://localhost:8080/*"
-      ],
       "protocolMappers": [
         {
           "name": "realm roles",
@@ -117,9 +114,6 @@
       "protocol": "openid-connect",
       "clientAuthenticatorType": "client-secret",
       "secret": "deliver.service.orders-secret",
-      "redirectUris": [
-        "http://localhost:8080/*"
-      ],
       "protocolMappers": [
         {
           "name": "realm roles",
